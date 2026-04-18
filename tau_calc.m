@@ -1,4 +1,4 @@
-function [time_const] = tau_calc(time_vec, speed_vec, y_L, y_H, ts)
+function time_const = tau_calc(time_vec, speed_vec, y_L, y_H, ts)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Subfunction Name: tau_calc
 %
@@ -49,7 +49,8 @@ y_threshold = y_L + 0.632 * (y_H - y_L);
 % This gets the first time at which the speed is greater than 63.2%
 % This does not factor in the time it takes to start accelerating
 % Each index corresponds to 0.01 seconds.
-idx = find(speed_vec > y_threshold, 1);
+ts_idx = find(time_vec >= ts, 1);
+idx = find(speed_vec(ts_idx:end) > y_threshold, 1) + ts_idx - 1;
 time_tau = time_vec(idx);
 
 % Take the difference between the accerlation start time
@@ -64,7 +65,5 @@ time_const = time_tau - ts;
 
 %% ____________________
 %% RESULTS
-
-time_const
 
 end

@@ -1,4 +1,4 @@
-function [time_vec, speed_compact, speed_midsize, speed_fullsize] = sub_data(data_file)
+function [time_vec, speed_compact, speed_midsize, speed_fullsize, smooth_compact, smooth_midsize, smooth_fullsize] = sub_data(data_file)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ENGR 132 
 % Program Description 
@@ -7,7 +7,7 @@ function [time_vec, speed_compact, speed_midsize, speed_fullsize] = sub_data(dat
 % size category: compact, midsize, fullsize.
 %
 % Function Call
-% [time_vec, speed_compact, speed_midsize, speed_fullsize] = sub_data(data_file)
+% [time_vec, speed_compact, speed_midsize, speed_fullsize, smooth_compact, smooth_midsize, smooth_fullsize] = sub_data(data_file)
 %
 % Input Arguments
 % data_file: name of the raw CSV data file, 1x1 string, defined in main
@@ -17,6 +17,9 @@ function [time_vec, speed_compact, speed_midsize, speed_fullsize] = sub_data(dat
 % speed_compact: compact vehicle speed data in m/s, Nx15, passed to main
 % speed_midsize: midsize vehicle speed data in m/s, Nx15, passed to main
 % speed_fullsize: fullsize vehicle speed data in m/s, Nx15, passed to main
+% smooth_compact: smoothed compact vehicle speed data in m/s, Nx15, passed to main
+% smooth_midsize: smoothed midsize vehicle speed data in m/s, Nx15, passed to main
+% smooth_fullsize: smoothed fullsize vehicle speed data in m/s, Nx15, passed to main
 %
 % Assignment Information
 %   Assignment:     Cruise Auto - Data Handling
@@ -50,6 +53,16 @@ speed_midsize = raw_data{:, 17:31};
 % Extract fullsize speed data from columns 32 through 46 (Nx15) under winter, summer, and allseason tires
 
 speed_fullsize = raw_data{:, 32:46};
+
+% Take the raw data and smooth all of it with a window
+window = 200;
+
+b = ones(1, window) / window;
+a = 1;
+
+smooth_compact  = filtfilt(b, a, fillmissing(speed_compact,  'linear'));
+smooth_midsize  = filtfilt(b, a, fillmissing(speed_midsize,  'linear'));
+smooth_fullsize = filtfilt(b, a, fillmissing(speed_fullsize, 'linear'));
 
 %% ____________________
 %% FORMATTED TEXT/FIGURE DISPLAYS
